@@ -1,122 +1,113 @@
-# KaraokeLocal 🎤
+<div align="center">
+  <img src="assets/logo-horizontal.png" alt="CMP22 Karaoke" width="400">
+  
+  <h3>Free, open-source karaoke system for Windows</h3>
+  <p>No subscriptions. No closed catalogs. Your songs, your rules.</p>
 
-Sistema de karaokê doméstico com vídeos do YouTube.
+  [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+  [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)]()
+  [![Made with Electron](https://img.shields.io/badge/Made%20with-Electron-47848F.svg)](https://electronjs.org)
+
+</div>
 
 ---
 
-## Requisitos
+## What is CMP22 Karaoke?
 
-- **Node.js** 18+ ([nodejs.org](https://nodejs.org))
-- **yt-dlp** para download de vídeos
-- Windows 10/11
+CMP22 Karaoke is a free desktop karaoke application for Windows that uses YouTube videos as its song library. Instead of paying for closed catalogs that disappear when companies shut down, you download the videos you want and build your own permanent collection.
+
+**No subscription. No account. No internet required at runtime.**
 
 ---
 
-## Instalação
+## Features
 
-### 1. Instalar dependências do Node
+- 🎵 **YouTube Integration** — Search YouTube directly inside the app and download any karaoke video
+- 📚 **Personal Library** — Organize your songs with title, artist, language, and genre
+- 📋 **Queue System** — Build a setlist, reorder by drag and drop, play directly from any position
+- 🎤 **Scoring System** — Gamified scoring based on microphone activity (just for fun)
+- ⬇️ **Easy Downloads** — Search by name or paste a URL, fill in the metadata, done
+- 🎛️ **Full-Screen Player** — Clean video playback with hover controls
+- 🔄 **Auto-play** — Automatically plays the next song in queue when one ends
+- 🏠 **Works with any audio setup** — Compatible with audio interfaces (Focusrite Scarlett, etc.) and Voicemeeter
 
-```bash
-npm install
-```
+---
 
-### 2. Instalar yt-dlp
+## Screenshots
 
-**Opção A — via pip (recomendado):**
+> *(add screenshots here)*
+
+---
+
+## Requirements
+
+- Windows 10 or 11
+- [Node.js](https://nodejs.org) 18+ (for running from source)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) for downloading videos
+
+---
+
+## Installation
+
+### Option A — Download the installer (recommended)
+
+Download the latest `CMP22 Karaoke Setup.exe` from the [Releases](../../releases) page and run it.
+
+yt-dlp is required separately:
+
 ```bash
 pip install yt-dlp
 ```
 
-**Opção B — executável direto:**
-- Baixe `yt-dlp.exe` em https://github.com/yt-dlp/yt-dlp/releases
-- Coloque na pasta `bin/` do projeto
+Or download `yt-dlp.exe` from [github.com/yt-dlp/yt-dlp/releases](https://github.com/yt-dlp/yt-dlp/releases) and place it in the `bin/` folder inside the app installation directory.
 
-### 3. Iniciar o app
+### Option B — Run from source
 
 ```bash
+git clone https://github.com/unnindev/cmp22-karaoke
+cd cmp22-karaoke
+npm install
 npm start
 ```
 
 ---
 
-## Como usar
+## Recommended Audio Setup
 
-### Baixar uma música
+For the best experience with microphones:
 
-1. Vá para a aba **Download**
-2. Cole a URL do YouTube (vídeo de karaokê)
-3. Clique em **Buscar** — o app carrega título, thumbnail e duração
-4. Edite os metadados: título, artista, idioma, gênero
-5. Clique em **Baixar música**
+1. Connect your microphone receiver to an audio interface (e.g. Focusrite Scarlett 2i2)
+2. Install [Voicemeeter Banana](https://vb-audio.com/Voicemeeter/banana.htm) (free)
+3. Set **VoiceMeeter Input** as your Windows default audio output
+4. Set your audio interface as Hardware Input 1 in Voicemeeter
+5. Set your TV or speakers as the A1 output
 
-A música aparece automaticamente na biblioteca ao terminar.
+This mixes the karaoke audio and microphone together before sending to your display.
 
-### Tocar uma música
-
-- **Duplo clique** em qualquer música na biblioteca: abre o modal de fila
-- Clique **▶ Tocar agora** para tocar imediatamente
-- Clique **+ Fila** para adicionar à fila (você pode informar quem vai cantar)
-
-### Gerenciar a fila
-
-- Aba **Fila** mostra todas as músicas na ordem
-- O app toca automaticamente a próxima ao terminar cada música
-- Botão **×** remove da fila
-- **Limpar fila** remove tudo
-
-### Editar metadados
-
-- Clique no ícone ✏️ ao lado de qualquer música
-- Edite título, artista, idioma ou gênero
-- **Excluir** remove a música da biblioteca E o arquivo de vídeo do disco
+See `VOICEMEETER-SETUP.md` for the full step-by-step guide.
 
 ---
 
-## Configuração de áudio (Focusrite Scarlett 2i2)
+## How it works
 
-1. No Windows, defina a Scarlett como dispositivo de saída padrão
-2. Abra o **Focusrite Control** e configure o monitor mix:
-   - Input 1/2: microfones
-   - DAW (saída do PC): áudio das músicas
-3. Conecte as caixas nas saídas da Scarlett
-
-O controle de volume dentro do app controla o volume do vídeo. O volume dos microfones é controlado pelo Focusrite Control ou pelos botões de gain da Scarlett.
+Songs are stored locally as `.mp4` files downloaded from YouTube. A local JSON database keeps track of metadata (title, artist, language, genre, play count). No cloud, no accounts, no dependencies after initial setup.
 
 ---
 
-## Tela de palco (TV / segundo monitor)
+## Legal notice
 
-A janela de palco abre automaticamente no segundo monitor se detectado.
-Se não tiver segundo monitor, abre como janela separada — mova manualmente para a TV.
-
----
-
-## Estrutura de pastas
-
-```
-karaoke-local/
-├── bin/           ← coloque yt-dlp.exe aqui (opcional)
-├── assets/songs/  ← pasta padrão de músicas (configurável)
-├── src/
-│   ├── control/   ← interface de controle
-│   └── stage/     ← tela do palco
-├── main.js        ← processo principal
-├── preload.js     ← bridge IPC
-└── db.js          ← banco SQLite
-```
-
-O banco de dados (`karaoke.db`) e as configurações ficam em:
-- Windows: `%APPDATA%\karaoke-local\`
+Downloading YouTube videos may violate YouTube's Terms of Service. This software is intended for **personal, non-commercial use only**. Users are responsible for ensuring they have the right to download and use any content. The developer does not host, distribute, or provide any copyrighted content.
 
 ---
 
-## Solução de problemas
+## Support the project
 
-**"yt-dlp não encontrado"**
-→ Instale via `pip install yt-dlp` ou coloque o `.exe` na pasta `bin/`
+If CMP22 Karaoke saved you money on a subscription or brought joy to your home karaoke nights, consider buying me a coffee:
 
-**Vídeo não toca na janela de palco**
-→ Verifique se o arquivo foi baixado na pasta configurada em Config
+☕ **[Buy me a coffee](https://ko-fi.com/YOUR_LINK)**
 
-**Áudio sem latência ruim no microfone**
-→ No Focusrite Control, ative o "Direct Monitor" para ouvir o microfone com latência zero
+---
+
+## License
+
+MIT License — free to use, modify, and distribute.

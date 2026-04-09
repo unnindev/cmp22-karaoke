@@ -71,7 +71,7 @@
     }
     #video-wrap:hover #song-info-overlay { opacity: 1; }
 
-    /* Pontuação */
+    /* Score */
     #score-screen {
       position: fixed; inset: 0; z-index: 200;
       background: radial-gradient(ellipse at center, #1a0030 0%, #000 70%);
@@ -173,9 +173,9 @@
      TELA DE PONTUAÇÃO
 ════════════════════════════════════════════════════════════════════════════ -->
 <div id="score-screen">
-  <div class="text-white/40 text-xl font-semibold tracking-widest uppercase mb-4">Pontuação</div>
+  <div class="text-white/40 text-xl font-semibold tracking-widest uppercase mb-4">Score</div>
   <div id="score-number">0</div>
-  <div class="text-white/30 text-2xl tracking-widest mt-2">pontos</div>
+  <div class="text-white/30 text-2xl tracking-widest mt-2">points</div>
   <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar"></div></div>
 </div>
 
@@ -187,7 +187,7 @@
   <!-- Header -->
   <header class="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-black/40 flex-shrink-0">
     <img src="../../assets/logo-horizontal.png" alt="CMP22" style="height:44px;width:auto;max-width:260px;">
-    <div class="flex items-center gap-2 text-sm text-white/40" id="now-playing-label">Nenhuma música tocando</div>
+    <div class="flex items-center gap-2 text-sm text-white/40" id="now-playing-label">No song playing</div>
     <div class="flex items-center gap-2">
       <span class="text-white/30 text-sm">🔊</span>
       <input type="range" id="vol-slider" class="volume-bar w-24" min="0" max="100" value="80" oninput="setVol(this.value)">
@@ -199,11 +199,11 @@
   <nav class="flex justify-center gap-1 px-4 py-2 border-b border-white/10 flex-shrink-0">
     <button class="tab-btn active px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('library',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      Biblioteca
+      Library
     </button>
     <button class="tab-btn px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('queue',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-      Fila <span id="queue-badge" class="ml-1 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full hidden">0</span>
+      Queue <span id="queue-badge" class="ml-1 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full hidden">0</span>
     </button>
     <button class="tab-btn px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('download',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -211,7 +211,7 @@
     </button>
     <button class="tab-btn px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('settings',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Config
+      Settings
     </button>
   </nav>
 
@@ -224,22 +224,22 @@
         <img src="../../assets/logo-icon.png" alt="" style="width:320px;opacity:0.04;user-select:none;">
       </div>
       <div class="flex gap-2" style="position:relative;z-index:1;">
-        <input type="text" id="search-input" placeholder="Buscar música ou artista..." class="flex-1" oninput="loadLibrary()">
-        <select id="filter-lang" onchange="loadLibrary()" class="w-36"><option value="">Todos idiomas</option></select>
-        <select id="filter-genre" onchange="loadLibrary()" class="w-36"><option value="">Todos gêneros</option></select>
+        <input type="text" id="search-input" placeholder="Search song or artist..." class="flex-1" oninput="loadLibrary()">
+        <select id="filter-lang" onchange="loadLibrary()" class="w-36"><option value="">All languages</option></select>
+        <select id="filter-genre" onchange="loadLibrary()" class="w-36"><option value="">All genres</option></select>
       </div>
       <div class="flex-1 overflow-auto rounded-lg border border-white/5" style="position:relative;z-index:1;">
         <table class="lib-table">
           <colgroup><col style="width:auto"><col style="width:180px"><col style="width:110px"><col style="width:110px"><col style="width:65px"><col style="width:90px"></colgroup>
           <thead><tr>
-            <th onclick="doSort('title')" id="th-title">Título <span id="sa-title">↑</span></th>
-            <th onclick="doSort('artist')" id="th-artist">Artista <span id="sa-artist"></span></th>
-            <th onclick="doSort('language')" id="th-language">Idioma <span id="sa-language"></span></th>
-            <th onclick="doSort('genre')" id="th-genre">Gênero <span id="sa-genre"></span></th>
+            <th onclick="doSort('title')" id="th-title">Title <span id="sa-title">↑</span></th>
+            <th onclick="doSort('artist')" id="th-artist">Artist <span id="sa-artist"></span></th>
+            <th onclick="doSort('language')" id="th-language">Language <span id="sa-language"></span></th>
+            <th onclick="doSort('genre')" id="th-genre">Genre <span id="sa-genre"></span></th>
             <th onclick="doSort('play_count')" id="th-play_count">Plays <span id="sa-play_count"></span></th>
             <th></th>
           </tr></thead>
-          <tbody id="library-body"><tr><td colspan="6" class="text-center py-10 text-white/30">Carregando...</td></tr></tbody>
+          <tbody id="library-body"><tr><td colspan="6" class="text-center py-10 text-white/30">Loading...</td></tr></tbody>
         </table>
       </div>
       <div class="text-xs text-white/30" id="library-count" style="position:relative;z-index:1;"></div>
@@ -248,35 +248,35 @@
     <!-- FILA -->
     <div id="tab-queue" class="h-full flex flex-col p-3 gap-2 hidden">
       <div class="flex justify-between items-center">
-        <h2 class="font-semibold text-white/70">Fila <span class="text-white/30 text-sm font-normal">(arraste para reordenar)</span></h2>
-        <button onclick="clearQueue()" class="text-xs text-red-400 hover:text-red-300 btn-ghost px-3 py-1.5 rounded-lg">Limpar fila</button>
+        <h2 class="font-semibold text-white/70">Queue <span class="text-white/30 text-sm font-normal">(drag to reorder)</span></h2>
+        <button onclick="clearQueue()" class="text-xs text-red-400 hover:text-red-300 btn-ghost px-3 py-1.5 rounded-lg">Clear queue</button>
       </div>
       <div id="queue-list" class="flex-1 overflow-y-auto rounded-lg border border-white/5">
-        <div class="text-center py-10 text-white/30">Fila vazia</div>
+        <div class="text-center py-10 text-white/30">Queue vazia</div>
       </div>
     </div>
 
     <!-- DOWNLOAD -->
     <div id="tab-download" class="h-full overflow-y-auto p-4 hidden">
       <div class="max-w-2xl mx-auto space-y-4">
-        <h2 class="font-semibold text-white/70">Baixar música</h2>
+        <h2 class="font-semibold text-white/70">Download song</h2>
 
         <!-- Busca -->
         <div class="space-y-2">
-          <label class="text-xs text-white/40 uppercase tracking-wider">Buscar no YouTube</label>
+          <label class="text-xs text-white/40 uppercase tracking-wider">Search on YouTube</label>
           <div class="flex gap-2">
-            <input type="text" id="yt-search-input" placeholder="Nome da música ou artista..." class="flex-1" onkeydown="if(event.key==='Enter')searchYt()">
-            <button onclick="searchYt()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Buscar</button>
+            <input type="text" id="yt-search-input" placeholder="Song name or artist..." class="flex-1" onkeydown="if(event.key==='Enter')searchYt()">
+            <button onclick="searchYt()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Search</button>
           </div>
           <div id="yt-search-results" class="hidden rounded-xl border border-white/10 overflow-hidden"></div>
         </div>
 
         <!-- URL direta -->
         <div class="space-y-1">
-          <label class="text-xs text-white/40 uppercase tracking-wider">Ou cole o link do YouTube</label>
+          <label class="text-xs text-white/40 uppercase tracking-wider">Or paste a YouTube link</label>
           <div class="flex gap-2">
             <input type="url" id="yt-url" placeholder="https://www.youtube.com/watch?v=..." class="flex-1">
-            <button onclick="fetchYtInfo()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Buscar</button>
+            <button onclick="fetchYtInfo()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Search</button>
           </div>
         </div>
 
@@ -290,53 +290,53 @@
             </div>
           </div>
           <div class="px-4 pb-4 grid grid-cols-2 gap-3">
-            <div class="col-span-2"><label class="text-xs text-white/40 uppercase">Título</label><input type="text" id="meta-title" class="w-full mt-1"></div>
-            <div><label class="text-xs text-white/40 uppercase">Artista</label><input type="text" id="meta-artist" class="w-full mt-1"></div>
-            <div><label class="text-xs text-white/40 uppercase">Idioma</label><select id="meta-language" class="w-full mt-1"></select></div>
-            <div><label class="text-xs text-white/40 uppercase">Gênero</label><select id="meta-genre" class="w-full mt-1"></select></div>
-            <div><label class="text-xs text-white/40 uppercase">Qualidade</label><select id="meta-quality" class="w-full mt-1"><option value="720p">720p</option><option value="1080p">1080p</option></select></div>
+            <div class="col-span-2"><label class="text-xs text-white/40 uppercase">Title</label><input type="text" id="meta-title" class="w-full mt-1"></div>
+            <div><label class="text-xs text-white/40 uppercase">Artist</label><input type="text" id="meta-artist" class="w-full mt-1"></div>
+            <div><label class="text-xs text-white/40 uppercase">Language</label><select id="meta-language" class="w-full mt-1"></select></div>
+            <div><label class="text-xs text-white/40 uppercase">Genre</label><select id="meta-genre" class="w-full mt-1"></select></div>
+            <div><label class="text-xs text-white/40 uppercase">Quality</label><select id="meta-quality" class="w-full mt-1"><option value="720p">720p</option><option value="1080p">1080p</option></select></div>
           </div>
           <div id="dl-progress-wrap" class="px-4 pb-3 hidden">
             <div class="dl-progress-bar"><div class="dl-progress-fill" id="dl-fill" style="width:0%"></div></div>
-            <div class="text-xs text-white/40 mt-1 text-center" id="dl-text">Preparando...</div>
+            <div class="text-xs text-white/40 mt-1 text-center" id="dl-text">Preparing...</div>
           </div>
           <div class="px-4 pb-4">
-            <button id="btn-download" onclick="startDownload()" class="w-full btn-primary py-3 rounded-lg text-white font-semibold">⬇️ Baixar música</button>
+            <button id="btn-download" onclick="startDownload()" class="w-full btn-primary py-3 rounded-lg text-white font-semibold">⬇️ Download song</button>
           </div>
         </div>
 
         <div id="dl-result" class="hidden rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-green-400 text-sm"></div>
         <div id="dl-error" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-400 text-sm"></div>
-        <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 text-yellow-400/80 text-sm">⚠️ Em caso de dúvidas chame o Sato.</div>
+        <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 text-yellow-400/80 text-sm">⚠️ For support, contact Sato.</div>
       </div>
     </div>
 
     <!-- CONFIG -->
     <div id="tab-settings" class="h-full overflow-y-auto p-4 hidden">
       <div class="max-w-xl mx-auto space-y-6">
-        <h2 class="font-semibold text-white/70">Configurações</h2>
+        <h2 class="font-semibold text-white/70">Settingsurações</h2>
         <div class="space-y-2">
-          <label class="text-xs text-white/40 uppercase">Pasta de músicas</label>
-          <div class="flex gap-2"><input type="text" id="songs-folder-input" class="flex-1" readonly><button onclick="chooseFolder()" class="btn-primary px-4 py-2 rounded-lg text-sm text-white">Escolher</button></div>
+          <label class="text-xs text-white/40 uppercase">Songs folder</label>
+          <div class="flex gap-2"><input type="text" id="songs-folder-input" class="flex-1" readonly><button onclick="chooseFolder()" class="btn-primary px-4 py-2 rounded-lg text-sm text-white">Choose</button></div>
         </div>
         <div class="space-y-2">
-          <label class="text-xs text-white/40 uppercase">Volume padrão</label>
+          <label class="text-xs text-white/40 uppercase">Default volume</label>
           <div class="flex items-center gap-3">
             <input type="range" id="default-volume" class="volume-bar flex-1" min="0" max="100" value="80" oninput="document.getElementById('dv-display').textContent=this.value">
             <span class="text-sm text-white/60 w-8" id="dv-display">80</span>
           </div>
         </div>
         <div class="space-y-2">
-          <label class="text-xs text-white/40 uppercase">Idiomas disponíveis</label>
-          <div class="flex gap-2"><input type="text" id="new-language" placeholder="Ex: Português" class="flex-1" onkeydown="if(event.key==='Enter')addLanguage()"><button onclick="addLanguage()" class="btn-primary px-3 py-2 rounded-lg text-sm text-white">+</button></div>
+          <label class="text-xs text-white/40 uppercase">Languages disponíveis</label>
+          <div class="flex gap-2"><input type="text" id="new-language" placeholder="Ex: Portuguese" class="flex-1" onkeydown="if(event.key==='Enter')addLanguage()"><button onclick="addLanguage()" class="btn-primary px-3 py-2 rounded-lg text-sm text-white">+</button></div>
           <div id="language-tags" class="flex flex-wrap gap-2 mt-2"></div>
         </div>
         <div class="space-y-2">
-          <label class="text-xs text-white/40 uppercase">Gêneros disponíveis</label>
-          <div class="flex gap-2"><input type="text" id="new-genre" placeholder="Ex: Sertanejo" class="flex-1" onkeydown="if(event.key==='Enter')addGenre()"><button onclick="addGenre()" class="btn-primary px-3 py-2 rounded-lg text-sm text-white">+</button></div>
+          <label class="text-xs text-white/40 uppercase">Genres disponíveis</label>
+          <div class="flex gap-2"><input type="text" id="new-genre" placeholder="Ex: Pop" class="flex-1" onkeydown="if(event.key==='Enter')addGenre()"><button onclick="addGenre()" class="btn-primary px-3 py-2 rounded-lg text-sm text-white">+</button></div>
           <div id="genre-tags" class="flex flex-wrap gap-2 mt-2"></div>
         </div>
-        <button onclick="saveSettings()" class="btn-primary px-6 py-2.5 rounded-lg text-white text-sm font-medium">Salvar configurações</button>
+        <button onclick="saveSettings()" class="btn-primary px-6 py-2.5 rounded-lg text-white text-sm font-medium">Save configurações</button>
       </div>
     </div>
 
@@ -346,21 +346,21 @@
 <!-- MODAL EDIT -->
 <div id="edit-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden">
   <div class="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
-    <h3 class="font-bold text-lg mb-4">Editar música</h3>
+    <h3 class="font-bold text-lg mb-4">Edit song</h3>
     <input type="hidden" id="edit-id">
     <div class="space-y-3">
-      <div><label class="text-xs text-white/40 uppercase">Título</label><input type="text" id="edit-title" class="w-full mt-1"></div>
-      <div><label class="text-xs text-white/40 uppercase">Artista</label><input type="text" id="edit-artist" class="w-full mt-1"></div>
+      <div><label class="text-xs text-white/40 uppercase">Title</label><input type="text" id="edit-title" class="w-full mt-1"></div>
+      <div><label class="text-xs text-white/40 uppercase">Artist</label><input type="text" id="edit-artist" class="w-full mt-1"></div>
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="text-xs text-white/40 uppercase">Idioma</label><select id="edit-language" class="w-full mt-1"></select></div>
-        <div><label class="text-xs text-white/40 uppercase">Gênero</label><select id="edit-genre" class="w-full mt-1"></select></div>
+        <div><label class="text-xs text-white/40 uppercase">Language</label><select id="edit-language" class="w-full mt-1"></select></div>
+        <div><label class="text-xs text-white/40 uppercase">Genre</label><select id="edit-genre" class="w-full mt-1"></select></div>
       </div>
     </div>
     <div class="flex justify-between mt-6">
-      <button onclick="deleteSong()" class="btn-danger px-4 py-2 rounded-lg text-white text-sm">🗑 Excluir</button>
+      <button onclick="deleteSong()" class="btn-danger px-4 py-2 rounded-lg text-white text-sm">🗑 Delete</button>
       <div class="flex gap-2">
-        <button onclick="closeModal()" class="btn-ghost px-4 py-2 rounded-lg text-sm text-white/60">Cancelar</button>
-        <button onclick="saveSong()" class="btn-primary px-4 py-2 rounded-lg text-white text-sm">Salvar</button>
+        <button onclick="closeModal()" class="btn-ghost px-4 py-2 rounded-lg text-sm text-white/60">Cancel</button>
+        <button onclick="saveSong()" class="btn-primary px-4 py-2 rounded-lg text-white text-sm">Save</button>
       </div>
     </div>
   </div>
@@ -369,12 +369,12 @@
 <!-- MODAL FILA -->
 <div id="queue-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden">
   <div class="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-    <h3 class="font-bold text-lg mb-1">Adicionar à fila</h3>
+    <h3 class="font-bold text-lg mb-1">Add to queue</h3>
     <p class="text-sm text-white/50 mb-5" id="queue-song-name"></p>
     <input type="hidden" id="queue-song-id">
     <div class="flex gap-2">
-      <button onclick="confirmQueue(false)" class="flex-1 btn-ghost border border-white/20 py-3 rounded-xl text-sm text-white/80 font-medium">📋 + Fila</button>
-      <button onclick="confirmQueue(true)" class="flex-1 btn-primary py-3 rounded-xl text-white text-sm font-semibold">▶ Tocar Agora</button>
+      <button onclick="confirmQueue(false)" class="flex-1 btn-ghost border border-white/20 py-3 rounded-xl text-sm text-white/80 font-medium">📋 + Queue</button>
+      <button onclick="confirmQueue(true)" class="flex-1 btn-primary py-3 rounded-xl text-white text-sm font-semibold">▶ Play Now</button>
     </div>
   </div>
 </div>
@@ -387,7 +387,7 @@ let lists={languages:[],genres:[]};
 let dragSrcIdx=null;
 let hideControlsTimer=null;
 
-// ─── Pontuação ────────────────────────────────────────────────────────────────
+// ─── Score ────────────────────────────────────────────────────────────────
 let audioCtx=null, analyser=null, micStream=null, scoreInterval=null, scoreWindows=[];
 
 async function startScoring() {
@@ -403,7 +403,7 @@ async function startScoring() {
       let sum=0; for(let i=0;i<data.length;i++){const v=(data[i]-128)/128;sum+=v*v;}
       scoreWindows.push(Math.sqrt(sum/data.length)*255>15?1:0);
     },500);
-  } catch(e){console.log('Mic indisponível:',e.message);}
+  } catch(e){console.log('Mic unavailable:',e.message);}
 }
 
 function stopScoring() {
@@ -475,7 +475,7 @@ function stopPlayer() {
   video.pause(); video.src='';
   overlay.classList.remove('active');
   currentSong=null; isPlaying=false; isPaused=false;
-  document.getElementById('now-playing-label').textContent='Nenhuma música tocando';
+  document.getElementById('now-playing-label').textContent='No song playing';
   document.getElementById('seek-bar').value=0;
   document.getElementById('ctrl-time').textContent='0:00 / 0:00';
   renderLibrary();
@@ -548,7 +548,7 @@ function switchTab(tab, btn) {
   if(tab==='settings') loadSettingsData();
 }
 
-// ─── Biblioteca ───────────────────────────────────────────────────────────────
+// ─── Library ───────────────────────────────────────────────────────────────
 async function loadLibrary() {
   const search=document.getElementById('search-input').value;
   const language=document.getElementById('filter-lang').value;
@@ -562,8 +562,8 @@ async function loadFilters() {
   const genres=await window.api.getDistinctValues('genre');
   const ls=document.getElementById('filter-lang'), gs=document.getElementById('filter-genre');
   const cl=ls.value,cg=gs.value;
-  ls.innerHTML='<option value="">Todos idiomas</option>'+langs.map(l=>`<option value="${l.language}"${l.language===cl?' selected':''}>${l.language}</option>`).join('');
-  gs.innerHTML='<option value="">Todos gêneros</option>'+genres.map(g=>`<option value="${g.genre}"${g.genre===cg?' selected':''}>${g.genre}</option>`).join('');
+  ls.innerHTML='<option value="">All languages</option>'+langs.map(l=>`<option value="${l.language}"${l.language===cl?' selected':''}>${l.language}</option>`).join('');
+  gs.innerHTML='<option value="">All genres</option>'+genres.map(g=>`<option value="${g.genre}"${g.genre===cg?' selected':''}>${g.genre}</option>`).join('');
 }
 
 function doSort(field) {
@@ -579,7 +579,7 @@ function doSort(field) {
 function renderLibrary() {
   const body=document.getElementById('library-body');
   document.getElementById('library-count').textContent=songs.length+' música'+(songs.length!==1?'s':'');
-  if(!songs.length){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-white/30">Nenhuma música encontrada</td></tr>';return;}
+  if(!songs.length){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-white/30">No songs found</td></tr>';return;}
   body.innerHTML=songs.map(s=>`
     <tr class="${currentSong?.id===s.id?'playing':''}" ondblclick="openQueueModal(${s.id})">
       <td class="font-medium" title="${esc(s.title)}">${esc(s.title)}</td>
@@ -594,7 +594,7 @@ function renderLibrary() {
     </tr>`).join('');
 }
 
-// ─── Fila ─────────────────────────────────────────────────────────────────────
+// ─── Queue ─────────────────────────────────────────────────────────────────────
 async function loadQueue() {
   queue=await window.api.getQueue();
   renderQueue();
@@ -605,7 +605,7 @@ async function loadQueue() {
 
 function renderQueue() {
   const list=document.getElementById('queue-list');
-  if(!queue.length){list.innerHTML='<div class="text-center py-10 text-white/30">Fila vazia</div>';return;}
+  if(!queue.length){list.innerHTML='<div class="text-center py-10 text-white/30">Queue vazia</div>';return;}
   list.innerHTML=queue.map((q,i)=>`
     <div class="queue-item flex items-center gap-3 px-4 py-3 border-b border-white/5"
          draggable="true" data-index="${i}"
@@ -644,7 +644,7 @@ async function dragDrop(e,toI){
 }
 
 async function removeFromQueue(qId){await window.api.removeFromQueue(qId);await loadQueue();}
-async function clearQueue(){if(!confirm('Limpar toda a fila?'))return;await window.api.clearQueue();await loadQueue();}
+async function clearQueue(){if(!confirm('Clear the entire queue?'))return;await window.api.clearQueue();await loadQueue();}
 
 // ─── Modais ───────────────────────────────────────────────────────────────────
 function openQueueModal(songId) {
@@ -688,7 +688,7 @@ async function saveSong() {
 async function deleteSong() {
   const id=parseInt(document.getElementById('edit-id').value);
   const s=songs.find(x=>x.id===id);
-  if(!confirm(`Excluir "${s?.title}"? O arquivo será apagado.`))return;
+  if(!confirm(`Excluir "${s?.title}"? The file will also be deleted.`))return;
   await window.api.deleteSong(id); closeModal(); await loadLibrary();
 }
 
@@ -699,11 +699,11 @@ async function searchYt() {
   const q=document.getElementById('yt-search-input').value.trim();
   if(!q) return;
   const resultsEl=document.getElementById('yt-search-results');
-  resultsEl.innerHTML='<div class="p-4 text-white/40 text-sm text-center">Buscando...</div>';
+  resultsEl.innerHTML='<div class="p-4 text-white/40 text-sm text-center">Searching...</div>';
   resultsEl.classList.remove('hidden');
   try {
     const results=await window.api.ytSearch(q);
-    if(!results.length){resultsEl.innerHTML='<div class="p-4 text-white/40 text-sm text-center">Nenhum resultado</div>';return;}
+    if(!results.length){resultsEl.innerHTML='<div class="p-4 text-white/40 text-sm text-center">No results found</div>';return;}
     resultsEl.innerHTML=results.map(r=>`
       <div class="yt-result flex items-center gap-3 px-4 py-3 border-b border-white/5 cursor-pointer" onclick="selectYtResult(${JSON.stringify(r).replace(/"/g,'&quot;')})">
         <img src="${r.thumbnail||''}" class="w-20 h-14 object-cover rounded flex-shrink-0" onerror="this.style.display='none'">
@@ -714,7 +714,7 @@ async function searchYt() {
         <button class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded text-xs flex-shrink-0">Selecionar</button>
       </div>`).join('');
   } catch(e) {
-    resultsEl.innerHTML=`<div class="p-4 text-red-400 text-sm">Erro: ${e.message}</div>`;
+    resultsEl.innerHTML=`<div class="p-4 text-red-400 text-sm">Error: ${e.message}</div>`;
   }
 }
 
@@ -734,7 +734,7 @@ async function fetchYtInfo() {
     const info=await window.api.fetchYtInfo(url);
     populatePreview(info);
   } catch(e) {
-    document.getElementById('dl-error').textContent='Erro: '+e.message;
+    document.getElementById('dl-error').textContent='Error: '+e.message;
     document.getElementById('dl-error').classList.remove('hidden');
   }
 }
@@ -771,9 +771,9 @@ async function startDownload() {
       quality:document.getElementById('meta-quality').value,
     });
   } catch(e) {
-    document.getElementById('dl-error').textContent='Erro: '+e.message;
+    document.getElementById('dl-error').textContent='Error: '+e.message;
     document.getElementById('dl-error').classList.remove('hidden');
-    btn.disabled=false; btn.textContent='⬇️ Baixar música';
+    btn.disabled=false; btn.textContent='⬇️ Download song';
     document.getElementById('dl-progress-wrap').classList.add('hidden');
   }
 }
@@ -781,16 +781,16 @@ async function startDownload() {
 function setupDownloadEvents() {
   window.api.onDownloadProgress(d=>{
     document.getElementById('dl-fill').style.width=d.percent+'%';
-    document.getElementById('dl-text').textContent=Math.round(d.percent)+'% concluído';
+    document.getElementById('dl-text').textContent=Math.round(d.percent)+'% complete';
   });
   window.api.onDownloadDone(song=>{
     document.getElementById('dl-fill').style.width='100%';
     setTimeout(()=>{
       document.getElementById('dl-progress-wrap').classList.add('hidden');
-      document.getElementById('dl-result').textContent='✅ "'+song.title+'" adicionado à biblioteca!';
+      document.getElementById('dl-result').textContent='✅ "'+song.title+'" added to library!';
       document.getElementById('dl-result').classList.remove('hidden');
       const btn=document.getElementById('btn-download');
-      btn.disabled=false; btn.textContent='⬇️ Baixar música';
+      btn.disabled=false; btn.textContent='⬇️ Download song';
       document.getElementById('yt-url').value='';
       document.getElementById('yt-preview').classList.add('hidden');
       document.getElementById('yt-search-input').value='';
@@ -799,15 +799,15 @@ function setupDownloadEvents() {
     },600);
   });
   window.api.onDownloadError(d=>{
-    document.getElementById('dl-error').textContent='Erro: '+d.message;
+    document.getElementById('dl-error').textContent='Error: '+d.message;
     document.getElementById('dl-error').classList.remove('hidden');
     document.getElementById('dl-progress-wrap').classList.add('hidden');
     const btn=document.getElementById('btn-download');
-    btn.disabled=false; btn.textContent='⬇️ Baixar música';
+    btn.disabled=false; btn.textContent='⬇️ Download song';
   });
 }
 
-// ─── Config ───────────────────────────────────────────────────────────────────
+// ─── Settings ───────────────────────────────────────────────────────────────────
 async function loadSettingsData() {
   const s=await window.api.getSettings();
   document.getElementById('songs-folder-input').value=s.songsFolder||'';
@@ -835,7 +835,7 @@ async function saveSettings(){
   await window.api.saveLists(lists.languages,lists.genres);
   document.getElementById('vol-slider').value=v;
   document.getElementById('vol-display').textContent=v;
-  alert('Configurações salvas!');
+  alert('Settingsurações salvas!');
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
