@@ -104,7 +104,7 @@ Downloading YouTube videos may violate YouTube's Terms of Service. This software
 
 If CMP22 Karaoke saved you money on a subscription or brought joy to your home karaoke nights, consider buying me a coffee:
 
-☕ **[Buy me a coffee](https://ko-fi.com/YOUR_LINK)**
+☕ **[Buy me a coffee](https://ko-fi.com/unnin)**
 
 ---
 
