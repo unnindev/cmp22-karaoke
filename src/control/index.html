@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; img-src 'self' https: data:;">
+  <title>CMP22 Karaokê — Controle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { background: #0f0f0f; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #1a1a1a; }
+    ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    .tab-btn { transition: all 0.15s; border-radius: 10px; }
+    .tab-btn.active { background: #7c3aed; color: #fff; }
+    .tab-btn:not(.active):hover { background: #1e1e2e; }
+    .btn-primary { background: #7c3aed; transition: background 0.15s; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-danger { background: #dc2626; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-ghost { transition: background 0.15s; }
+    .btn-ghost:hover { background: #2a2a2a; }
+    .btn-control { background: rgba(255,255,255,0.08); border-radius: 10px; padding: 8px 14px; transition: all 0.15s; cursor: pointer; border: 1px solid rgba(255,255,255,0.06); font-size: 18px; }
+    .btn-control:hover { background: rgba(255,255,255,0.18); }
+    .seek-bar { -webkit-appearance: none; height: 4px; border-radius: 2px; background: #333; cursor: pointer; width: 100%; }
+    .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #7c3aed; cursor: pointer; margin-top: -5px; }
+    .seek-bar::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: #333; }
+    .volume-bar { -webkit-appearance: none; height: 3px; border-radius: 2px; background: #444; cursor: pointer; }
+    .volume-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #a78bfa; cursor: pointer; }
+    input[type=text], input[type=url], select { background: #1a1a2e; border: 1px solid #333; color: #f1f1f1; border-radius: 8px; padding: 8px 12px; outline: none; transition: border-color 0.15s; }
+    input[type=text]:focus, input[type=url]:focus, select:focus { border-color: #7c3aed; }
+    .lib-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .lib-table th { position: sticky; top: 0; background: #161622; z-index: 1; padding: 8px 10px; text-align: left; font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.8px; cursor: pointer; user-select: none; overflow: hidden; resize: horizontal; }
+    .lib-table th:hover { color: rgba(255,255,255,0.7); }
+    .lib-table th.sorted { color: #a78bfa; }
+    .lib-table td { padding: 7px 10px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lib-table tr:hover td { background: #1a1a2e; }
+    .lib-table tr.playing td { background: #1a0a30; }
+    .lib-table tr.playing td:first-child { border-left: 3px solid #7c3aed; }
+    .queue-item { transition: background 0.1s; }
+    .queue-item:hover { background: #1a1a2e; }
+    .queue-item.drag-over { border-top: 2px solid #7c3aed; }
+    .queue-item.dragging { opacity: 0.35; }
+    .modal-bg { background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); }
+    .tag { display: inline-flex; align-items: center; gap: 4px; background: #2a1a4a; border: 1px solid #5b21b6; border-radius: 20px; padding: 3px 10px; font-size: 12px; }
+    .tag button { color: #a78bfa; cursor: pointer; line-height: 1; background: none; border: none; font-size: 15px; }
+  </style>
+</head>
+<body class="h-screen flex flex-col select-none">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-black/40 flex-shrink-0">
+  <img src="../../assets/logo-horizontal.png" alt="CMP22 Karaokê" style="height:44px;width:auto;max-width:280px;">
+  <span class="text-white/40 text-sm" id="header-status">Nenhuma música tocando</span>
+  <div class="flex items-center gap-2">
+    <span class="text-white/30 text-sm">🔊</span>
+    <input type="range" id="volume-slider" class="volume-bar w-24" min="0" max="100" value="80" oninput="setVolume(this.value)">
+    <span class="text-xs text-white/40 w-6" id="vol-display">80</span>
+  </div>
+</header>
+
+<!-- NOW PLAYING BAR -->
+<div id="now-playing-bar" class="px-4 py-3 flex-shrink-0 border-b border-purple-900/40" style="background:linear-gradient(135deg,#0f0a1e,#1a0a30);display:none">
+  <div class="flex items-center gap-4">
+    <div class="flex-1 min-w-0">
+      <div class="flex items-baseline gap-2 mb-1.5">
+        <span class="font-bold text-sm truncate" id="np-title">—</span>
+        <span class="text-xs text-white/50 truncate" id="np-artist"></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-white/40 w-10 text-right flex-shrink-0" id="time-current">0:00</span>
+        <input type="range" id="seek-bar" class="seek-bar flex-1" min="0" max="1000" value="0" oninput="seekTo(this.value)">
+        <span class="text-xs text-white/40 w-10 flex-shrink-0" id="time-total">0:00</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-1 flex-shrink-0">
+      <button onclick="sendStop()" class="btn-control" title="Stop">⏹</button>
+      <button onclick="sendPause()" id="btn-pause" class="btn-control" title="Pause">⏸</button>
+      <button onclick="sendResume()" id="btn-resume" class="btn-control hidden" title="Continuar">▶️</button>
+      <button onclick="playNext()" class="btn-control" title="Próxima">⏭</button>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<nav class="flex justify-center gap-1 px-4 py-2 border-b border-white/10 flex-shrink-0">
+  <button class="tab-btn active px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('library',this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Biblioteca
+  </button>
+  <button class="tab-btn px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('queue',this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Fila <span id="queue-count" class="ml-1 bg-purple-600 text-white text-xs px-1.5 py-0.5 rounded-full hidden">0</span>
+  </button>
+  <button class="tab-btn px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('download',this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download
+  </button>
+  <button class="tab-btn px-4 py-2 text-sm font-medium flex items-center gap-2" onclick="switchTab('settings',this)">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Config
+  </button>
+</nav>
+
+<main class="flex-1 overflow-hidden">
+
+  <!-- BIBLIOTECA -->
+  <div id="tab-library" class="h-full flex flex-col p-3 gap-2">
+    <div class="flex gap-2">
+      <input type="text" id="search-input" placeholder="Buscar música ou artista..." class="flex-1" oninput="loadLibrary()">
+      <select id="filter-lang" onchange="loadLibrary()" class="w-36"><option value="">Todos idiomas</option></select>
+      <select id="filter-genre" onchange="loadLibrary()" class="w-36"><option value="">Todos gêneros</option></select>
+    </div>
+    <div class="flex-1 overflow-auto rounded-lg border border-white/5">
+      <table class="lib-table">
+        <colgroup>
+          <col style="width:auto">
+          <col style="width:180px">
+          <col style="width:110px">
+          <col style="width:110px">
+          <col style="width:65px">
+          <col style="width:80px">
+        </colgroup>
+        <thead>
+          <tr>
+            <th onclick="doSort('title')" id="th-title">Título <span id="sa-title">↑</span></th>
+            <th onclick="doSort('artist')" id="th-artist">Artista <span id="sa-artist"></span></th>
+            <th onclick="doSort('language')" id="th-language">Idioma <span id="sa-language"></span></th>
+            <th onclick="doSort('genre')" id="th-genre">Gênero <span id="sa-genre"></span></th>
+            <th onclick="doSort('play_count')" id="th-play_count">Plays <span id="sa-play_count"></span></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="library-body">
+          <tr><td colspan="6" class="text-center py-10 text-white/30">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-xs text-white/30" id="library-count"></div>
+  </div>
+
+  <!-- FILA -->
+  <div id="tab-queue" class="h-full flex flex-col p-3 gap-2 hidden">
+    <div class="flex justify-between items-center">
+      <h2 class="font-semibold text-white/70">Fila de músicas <span class="text-white/30 text-sm font-normal">(arraste para reordenar)</span></h2>
+      <button onclick="clearQueue()" class="text-xs text-red-400 hover:text-red-300 btn-ghost px-3 py-1.5 rounded-lg">Limpar fila</button>
+    </div>
+    <div id="queue-list" class="flex-1 overflow-y-auto rounded-lg border border-white/5">
+      <div class="text-center py-10 text-white/30">Fila vazia</div>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD -->
+  <div id="tab-download" class="h-full overflow-y-auto p-4 hidden">
+    <div class="max-w-2xl mx-auto space-y-4">
+      <h2 class="font-semibold text-white/70">Baixar do YouTube</h2>
+      <div class="flex gap-2">
+        <input type="url" id="yt-url" placeholder="https://www.youtube.com/watch?v=..." class="flex-1">
+        <button onclick="fetchYtInfo()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium text-white">Buscar</button>
+      </div>
+
+      <div id="yt-preview" class="hidden rounded-xl border border-white/10 overflow-hidden bg-white/5">
+        <div class="flex gap-4 p-4">
+          <img id="yt-thumb" src="" alt="" class="w-28 h-20 object-cover rounded-lg flex-shrink-0">
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-sm truncate" id="yt-orig-title"></div>
+            <div class="text-xs text-white/40 mt-1" id="yt-duration-text"></div>
+          </div>
+        </div>
+        <div class="px-4 pb-4 grid grid-cols-2 gap-3">
+          <div class="col-span-2">
+            <label class="text-xs text-white/40 uppercase tracking-wider">Título da música</label>
+            <input type="text" id="meta-title" class="w-full mt-1">
+          </div>
+          <div>
+            <label class="text-xs text-white/40 uppercase tracking-wider">Artista</label>
+            <input type="text" id="meta-artist" class="w-full mt-1">
+          </div>
+          <div>
+            <label class="text-xs text-white/40 uppercase tracking-wider">Idioma</label>
+            <select id="meta-language" class="w-full mt-1"></select>
+          </div>
+          <div>
+            <label class="text-xs text-white/40 uppercase tracking-wider">Gênero</label>
+            <select id="meta-genre" class="w-full mt-1"></select>
+          </div>
+          <div>
+            <label class="text-xs text-white/40 uppercase tracking-wider">Qualidade</label>
+            <select id="meta-quality" class="w-full mt-1">
+              <option value="720p">720p</option>
+              <option value="1080p">1080p</option>
+            </select>
+          </div>
+        </div>
+        <div id="dl-progress-container" class="px-4 pb-3 hidden">
+          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div id="dl-progress-fill" class="h-full bg-gradient-to-r from-purple-600 to-pink-500 rounded-full" style="width:0%;transition:none"></div>
+          </div>
+          <div class="text-xs text-white/40 mt-1 text-center" id="dl-progress-text">Preparando...</div>
+        </div>
+        <div class="px-4 pb-4">
+          <button id="btn-download" onclick="startDownload()" class="w-full btn-primary py-3 rounded-lg text-white font-semibold">⬇️ Baixar música</button>
+        </div>
+      </div>
+
+      <div id="dl-result" class="hidden rounded-xl border border-green-500/30 bg-green-500/10 p-4 text-green-400 text-sm"></div>
+      <div id="dl-error" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-400 text-sm"></div>
+      <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 text-yellow-400/80 text-sm">
+        ⚠️ Em caso de dúvidas chame o Sato.
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG -->
+  <div id="tab-settings" class="h-full overflow-y-auto p-4 hidden">
+    <div class="max-w-xl mx-auto space-y-6">
+      <h2 class="font-semibold text-white/70">Configurações</h2>
+      <div class="space-y-2">
+        <label class="text-xs text-white/40 uppercase tracking-wider">Pasta de músicas</label>
+        <div class="flex gap-2">
+          <input type="text" id="songs-folder-input" class="flex-1" readonly>
+          <button onclick="chooseFolder()" class="btn-primary px-4 py-2 rounded-lg text-sm text-white">Escolher</button>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs text-white/40 uppercase tracking-wider">Janela de palco</label>
+        <div class="flex gap-2">
+          <select id="stage-monitor" class="flex-1" onchange="moveStageToMonitor(this.value)"><option>Carregando...</option></select>
+          <button onclick="toggleFullscreen()" id="btn-fullscreen" class="btn-primary px-4 py-2 rounded-lg text-sm text-white">⛶ Fullscreen</button>
+          <button onclick="window.api.showStage()" class="btn-ghost border border-white/20 px-3 py-2 rounded-lg text-sm text-white/70">Foco</button>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs text-white/40 uppercase tracking-wider">Volume padrão</label>
+        <div class="flex items-center gap-3">
+          <input type="range" id="default-volume" class="volume-bar flex-1" min="0" max="100" value="80" oninput="document.getElementById('default-volume-display').textContent=this.value">
+          <span class="text-sm text-white/60 w-8" id="default-volume-display">80</span>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs text-white/40 uppercase tracking-wider">Idiomas disponíveis</label>
+        <div class="flex gap-2">
+          <input type="text" id="new-language" placeholder="Ex: Português" class="flex-1" onkeydown="if(event.key==='Enter')addLanguage()">
+          <button onclick="addLanguage()" class="btn-primary px-3 py-2 rounded-lg text-sm text-white">+</button>
+        </div>
+        <div id="language-tags" class="flex flex-wrap gap-2 mt-2"></div>
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs text-white/40 uppercase tracking-wider">Gêneros disponíveis</label>
+        <div class="flex gap-2">
+          <input type="text" id="new-genre" placeholder="Ex: Sertanejo" class="flex-1" onkeydown="if(event.key==='Enter')addGenre()">
+          <button onclick="addGenre()" class="btn-primary px-3 py-2 rounded-lg text-sm text-white">+</button>
+        </div>
+        <div id="genre-tags" class="flex flex-wrap gap-2 mt-2"></div>
+      </div>
+      <button onclick="saveSettings()" class="btn-primary px-6 py-2.5 rounded-lg text-white text-sm font-medium">Salvar configurações</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL EDIT -->
+<div id="edit-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden">
+  <div class="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+    <h3 class="font-bold text-lg mb-4">Editar música</h3>
+    <input type="hidden" id="edit-id">
+    <div class="space-y-3">
+      <div><label class="text-xs text-white/40 uppercase">Título</label><input type="text" id="edit-title" class="w-full mt-1"></div>
+      <div><label class="text-xs text-white/40 uppercase">Artista</label><input type="text" id="edit-artist" class="w-full mt-1"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-white/40 uppercase">Idioma</label><select id="edit-language" class="w-full mt-1"></select></div>
+        <div><label class="text-xs text-white/40 uppercase">Gênero</label><select id="edit-genre" class="w-full mt-1"></select></div>
+      </div>
+    </div>
+    <div class="flex justify-between mt-6">
+      <button onclick="deleteSong()" class="btn-danger px-4 py-2 rounded-lg text-white text-sm">🗑 Excluir</button>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="btn-ghost px-4 py-2 rounded-lg text-sm text-white/60">Cancelar</button>
+        <button onclick="saveSong()" class="btn-primary px-4 py-2 rounded-lg text-white text-sm">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FILA -->
+<div id="queue-modal" class="fixed inset-0 modal-bg flex items-center justify-center z-50 hidden">
+  <div class="bg-gray-900 border border-white/10 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+    <h3 class="font-bold text-lg mb-1">Adicionar à fila</h3>
+    <p class="text-sm text-white/50 mb-5" id="queue-song-name"></p>
+    <input type="hidden" id="queue-song-id">
+    <div class="flex gap-2">
+      <button onclick="confirmAddToQueue(false)" class="flex-1 btn-ghost border border-white/20 py-3 rounded-xl text-sm text-white/80 font-medium">📋 + Fila</button>
+      <button onclick="confirmAddToQueue(true)" class="flex-1 btn-primary py-3 rounded-xl text-white text-sm font-semibold">▶ Tocar Agora</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let songs=[], queue=[], currentSong=null, isPlaying=false, isPaused=false;
+let duration=0, currentTime=0;
+let sortField='title', sortDirection='asc';
+let lists={languages:[],genres:[]};
+let dragSrcIdx=null;
+
+async function init() {
+  lists = await window.api.getLists();
+  await loadLibrary();
+  await loadQueue();
+  await loadSettingsData();
+  setupPlayerEvents();
+  setupDownloadEvents();
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.remove('hidden');
+  btn.classList.add('active');
+  if(tab==='queue') loadQueue();
+  if(tab==='settings') { loadSettingsData(); loadDisplays(); }
+}
+
+async function loadLibrary() {
+  const search=document.getElementById('search-input').value;
+  const language=document.getElementById('filter-lang').value;
+  const genre=document.getElementById('filter-genre').value;
+  songs = await window.api.getSongs(search,{language,genre},sortField,sortDirection);
+  renderLibrary();
+  loadFilters();
+}
+
+async function loadFilters() {
+  const langs=await window.api.getDistinctValues('language');
+  const genres=await window.api.getDistinctValues('genre');
+  const langSel=document.getElementById('filter-lang');
+  const genreSel=document.getElementById('filter-genre');
+  const cl=langSel.value, cg=genreSel.value;
+  langSel.innerHTML='<option value="">Todos idiomas</option>'+langs.map(l=>`<option value="${l.language}"${l.language===cl?' selected':''}>${l.language}</option>`).join('');
+  genreSel.innerHTML='<option value="">Todos gêneros</option>'+genres.map(g=>`<option value="${g.genre}"${g.genre===cg?' selected':''}>${g.genre}</option>`).join('');
+}
+
+function doSort(field) {
+  if(sortField===field) sortDirection=sortDirection==='asc'?'desc':'asc';
+  else { sortField=field; sortDirection='asc'; }
+  document.querySelectorAll('.lib-table th').forEach(th=>th.classList.remove('sorted'));
+  document.querySelectorAll('[id^="sa-"]').forEach(el=>el.textContent='');
+  const th=document.getElementById('th-'+field);
+  const sa=document.getElementById('sa-'+field);
+  if(th) th.classList.add('sorted');
+  if(sa) sa.textContent=sortDirection==='asc'?'↑':'↓';
+  loadLibrary();
+}
+
+function renderLibrary() {
+  const body=document.getElementById('library-body');
+  document.getElementById('library-count').textContent=songs.length+' música'+(songs.length!==1?'s':'');
+  if(!songs.length){body.innerHTML='<tr><td colspan="6" class="text-center py-10 text-white/30">Nenhuma música encontrada</td></tr>';return;}
+  body.innerHTML=songs.map(s=>`
+    <tr class="${currentSong?.id===s.id?'playing':''}" ondblclick="openQueueModal(${s.id})">
+      <td class="font-medium" title="${esc(s.title)}">${esc(s.title)}</td>
+      <td class="text-white/50">${esc(s.artist)}</td>
+      <td class="text-white/40 text-xs">${esc(s.language)}</td>
+      <td class="text-white/40 text-xs">${esc(s.genre)}</td>
+      <td class="text-white/40 text-xs">${s.play_count||0}x</td>
+      <td><div class="flex gap-1 justify-end">
+        <button onclick="openQueueModal(${s.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs">▶</button>
+        <button onclick="openEditModal(${s.id})" class="bg-white/10 hover:bg-white/20 text-white/70 px-2 py-1 rounded text-xs">✏️</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+async function loadQueue() {
+  queue=await window.api.getQueue();
+  renderQueue();
+  const count=document.getElementById('queue-count');
+  if(queue.length>0){count.textContent=queue.length;count.classList.remove('hidden');}
+  else count.classList.add('hidden');
+}
+
+function renderQueue() {
+  const list=document.getElementById('queue-list');
+  if(!queue.length){list.innerHTML='<div class="text-center py-10 text-white/30">Fila vazia</div>';return;}
+  list.innerHTML=queue.map((q,i)=>`
+    <div class="queue-item flex items-center gap-3 px-4 py-3 border-b border-white/5"
+         draggable="true" data-queue-id="${q.queue_id}" data-index="${i}"
+         ondragstart="dragStart(event,${i})"
+         ondragover="dragOver(event,${i})"
+         ondrop="dragDrop(event,${i})"
+         ondragend="dragEnd(event)"
+         ondragleave="dragLeave(event)">
+      <div class="text-white/20 cursor-grab text-lg">⠿</div>
+      <div class="flex-1 min-w-0">
+        <div class="font-medium text-sm truncate">${esc(q.title)}</div>
+        <div class="text-xs text-white/40">${esc(q.artist)}</div>
+      </div>
+      <button onclick="removeFromQueue(${q.queue_id})" class="text-white/30 hover:text-red-400 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/5 text-xl flex-shrink-0">×</button>
+    </div>`).join('');
+}
+
+function dragStart(e,idx) { dragSrcIdx=idx; setTimeout(()=>e.target.classList.add('dragging'),0); e.dataTransfer.effectAllowed='move'; }
+function dragOver(e,idx) { e.preventDefault(); document.querySelectorAll('.queue-item').forEach(el=>el.classList.remove('drag-over')); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function dragEnd(e) { document.querySelectorAll('.queue-item').forEach(el=>el.classList.remove('dragging','drag-over')); }
+async function dragDrop(e,toIdx) {
+  e.preventDefault();
+  document.querySelectorAll('.queue-item').forEach(el=>el.classList.remove('dragging','drag-over'));
+  if(dragSrcIdx===null||dragSrcIdx===toIdx){dragSrcIdx=null;return;}
+  const item=queue[dragSrcIdx];
+  await window.api.reorderQueue(item.queue_id,toIdx);
+  dragSrcIdx=null;
+  await loadQueue();
+}
+
+async function removeFromQueue(queueId) { await window.api.removeFromQueue(queueId); await loadQueue(); }
+async function clearQueue() { if(!confirm('Limpar toda a fila?'))return; await window.api.clearQueue(); await loadQueue(); }
+
+function openQueueModal(songId) {
+  const s=songs.find(x=>x.id===songId); if(!s)return;
+  document.getElementById('queue-song-id').value=songId;
+  document.getElementById('queue-song-name').textContent=s.title+(s.artist?' — '+s.artist:'');
+  document.getElementById('queue-modal').classList.remove('hidden');
+}
+function closeQueueModal() { document.getElementById('queue-modal').classList.add('hidden'); }
+
+async function confirmAddToQueue(playNow) {
+  const songId=parseInt(document.getElementById('queue-song-id').value);
+  const song=songs.find(x=>x.id===songId);
+  closeQueueModal();
+  if(playNow) {
+    await window.api.stop();
+    await window.api.play({...song,volume:parseInt(document.getElementById('volume-slider').value)});
+    currentSong=song; isPlaying=true; isPaused=false;
+    updateNowPlaying(song); renderLibrary();
+  } else {
+    await window.api.addToQueue(songId,'');
+    await loadQueue();
+  }
+}
+
+function openEditModal(songId) {
+  const s=songs.find(x=>x.id===songId); if(!s)return;
+  document.getElementById('edit-id').value=s.id;
+  document.getElementById('edit-title').value=s.title;
+  document.getElementById('edit-artist').value=s.artist;
+  document.getElementById('edit-language').innerHTML=lists.languages.map(l=>`<option value="${l}"${l===s.language?' selected':''}>${l}</option>`).join('');
+  document.getElementById('edit-genre').innerHTML=lists.genres.map(g=>`<option value="${g}"${g===s.genre?' selected':''}>${g}</option>`).join('');
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+
+async function saveSong() {
+  const id=parseInt(document.getElementById('edit-id').value);
+  await window.api.updateSong(id,{
+    title:document.getElementById('edit-title').value.trim(),
+    artist:document.getElementById('edit-artist').value.trim(),
+    language:document.getElementById('edit-language').value,
+    genre:document.getElementById('edit-genre').value,
+  });
+  closeModal(); await loadLibrary();
+}
+
+async function deleteSong() {
+  const id=parseInt(document.getElementById('edit-id').value);
+  const s=songs.find(x=>x.id===id);
+  if(!confirm(`Excluir "${s?.title}"? O arquivo será apagado.`))return;
+  await window.api.deleteSong(id); closeModal(); await loadLibrary();
+}
+
+async function sendPause() {
+  await window.api.pause(); isPaused=true;
+  document.getElementById('btn-pause').classList.add('hidden');
+  document.getElementById('btn-resume').classList.remove('hidden');
+}
+async function sendResume() {
+  await window.api.resume(); isPaused=false;
+  document.getElementById('btn-resume').classList.add('hidden');
+  document.getElementById('btn-pause').classList.remove('hidden');
+}
+async function sendStop() {
+  await window.api.stop(); isPlaying=false; isPaused=false; currentSong=null;
+  document.getElementById('now-playing-bar').style.display='none';
+  document.getElementById('header-status').textContent='Nenhuma música tocando';
+  document.getElementById('btn-pause').classList.remove('hidden');
+  document.getElementById('btn-resume').classList.add('hidden');
+  renderLibrary();
+}
+async function playNext() {
+  const next=await window.api.playNext();
+  if(next){currentSong=next;isPlaying=true;isPaused=false;updateNowPlaying(next);renderLibrary();await loadQueue();}
+}
+function setVolume(val){document.getElementById('vol-display').textContent=val;window.api.setVolume(parseInt(val));}
+function seekTo(val){if(!duration)return;window.api.seek((val/1000)*duration);}
+
+function updateNowPlaying(song) {
+  if(!song)return;
+  document.getElementById('now-playing-bar').style.display='block';
+  document.getElementById('np-title').textContent=song.title;
+  document.getElementById('np-artist').textContent=song.artist||'';
+  document.getElementById('header-status').textContent='♪ '+song.title;
+}
+
+function setupPlayerEvents() {
+  window.api.onPlayerEvent((data)=>{
+    if(data.type==='progress'){
+      currentTime=data.currentTime; duration=data.duration;
+      const pct=duration?(currentTime/duration)*1000:0;
+      document.getElementById('seek-bar').value=pct;
+      document.getElementById('time-current').textContent=formatTime(currentTime);
+      document.getElementById('time-total').textContent=formatTime(duration);
+    } else if(data.type==='playing'){
+      currentSong=data.song; isPlaying=true; isPaused=false;
+      updateNowPlaying(data.song);
+      document.getElementById('btn-pause').classList.remove('hidden');
+      document.getElementById('btn-resume').classList.add('hidden');
+      renderLibrary(); loadQueue();
+    } else if(data.type==='ended'){ isPlaying=false; }
+  });
+}
+
+let ytInfo=null;
+async function fetchYtInfo() {
+  const url=document.getElementById('yt-url').value.trim(); if(!url)return;
+  document.getElementById('yt-preview').classList.add('hidden');
+  document.getElementById('dl-result').classList.add('hidden');
+  document.getElementById('dl-error').classList.add('hidden');
+  try {
+    ytInfo=await window.api.fetchYtInfo(url);
+    document.getElementById('yt-thumb').src=ytInfo.thumbnail;
+    document.getElementById('yt-orig-title').textContent=ytInfo.title;
+    document.getElementById('yt-duration-text').textContent=ytInfo.duration?formatTime(ytInfo.duration):'';
+    document.getElementById('meta-title').value=ytInfo.title;
+    document.getElementById('meta-artist').value=ytInfo.artist||'';
+    document.getElementById('meta-language').innerHTML='<option value="">Selecione...</option>'+lists.languages.map(l=>`<option>${l}</option>`).join('');
+    document.getElementById('meta-genre').innerHTML='<option value="">Selecione...</option>'+lists.genres.map(g=>`<option>${g}</option>`).join('');
+    document.getElementById('yt-preview').classList.remove('hidden');
+  } catch(e) {
+    document.getElementById('dl-error').textContent='Erro: '+e.message;
+    document.getElementById('dl-error').classList.remove('hidden');
+  }
+}
+
+async function startDownload() {
+  if(!ytInfo)return;
+  const btn=document.getElementById('btn-download');
+  btn.disabled=true; btn.textContent='⏳ Baixando...';
+  const fill=document.getElementById('dl-progress-fill');
+  fill.style.transition='none'; fill.style.width='0%';
+  document.getElementById('dl-progress-container').classList.remove('hidden');
+  document.getElementById('dl-result').classList.add('hidden');
+  document.getElementById('dl-error').classList.add('hidden');
+  setTimeout(()=>{fill.style.transition='width 0.3s';},50);
+  try {
+    await window.api.downloadSong({
+      url:document.getElementById('yt-url').value.trim(),
+      title:document.getElementById('meta-title').value.trim()||ytInfo.title,
+      artist:document.getElementById('meta-artist').value.trim(),
+      language:document.getElementById('meta-language').value,
+      genre:document.getElementById('meta-genre').value,
+      quality:document.getElementById('meta-quality').value,
+    });
+  } catch(e) {
+    document.getElementById('dl-error').textContent='Erro: '+e.message;
+    document.getElementById('dl-error').classList.remove('hidden');
+    btn.disabled=false; btn.textContent='⬇️ Baixar música';
+    document.getElementById('dl-progress-container').classList.add('hidden');
+  }
+}
+
+function setupDownloadEvents() {
+  window.api.onDownloadProgress((data)=>{
+    document.getElementById('dl-progress-fill').style.width=data.percent+'%';
+    document.getElementById('dl-progress-text').textContent=Math.round(data.percent)+'% concluído';
+  });
+  window.api.onDownloadDone((song)=>{
+    document.getElementById('dl-progress-fill').style.width='100%';
+    setTimeout(()=>{
+      document.getElementById('dl-progress-container').classList.add('hidden');
+      document.getElementById('dl-result').textContent='✅ "'+song.title+'" adicionado à biblioteca!';
+      document.getElementById('dl-result').classList.remove('hidden');
+      const btn=document.getElementById('btn-download');
+      btn.disabled=false; btn.textContent='⬇️ Baixar música';
+      document.getElementById('yt-url').value='';
+      document.getElementById('yt-preview').classList.add('hidden');
+      ytInfo=null; loadLibrary();
+    },600);
+  });
+  window.api.onDownloadError((data)=>{
+    document.getElementById('dl-error').textContent='Erro: '+data.message;
+    document.getElementById('dl-error').classList.remove('hidden');
+    document.getElementById('dl-progress-container').classList.add('hidden');
+    const btn=document.getElementById('btn-download');
+    btn.disabled=false; btn.textContent='⬇️ Baixar música';
+  });
+}
+
+async function loadSettingsData() {
+  const s=await window.api.getSettings();
+  document.getElementById('songs-folder-input').value=s.songsFolder||'';
+  document.getElementById('default-volume').value=s.volume||80;
+  document.getElementById('default-volume-display').textContent=s.volume||80;
+  lists=await window.api.getLists();
+  renderTags('language-tags',lists.languages,removeLanguage);
+  renderTags('genre-tags',lists.genres,removeGenre);
+}
+
+function renderTags(id,items,removeFn) {
+  document.getElementById(id).innerHTML=items.map((item,i)=>`<span class="tag">${esc(item)}<button onclick="${removeFn.name}(${i})">×</button></span>`).join('');
+}
+function addLanguage(){const v=document.getElementById('new-language').value.trim();if(!v||lists.languages.includes(v))return;lists.languages.push(v);document.getElementById('new-language').value='';renderTags('language-tags',lists.languages,removeLanguage);}
+function removeLanguage(i){lists.languages.splice(i,1);renderTags('language-tags',lists.languages,removeLanguage);}
+function addGenre(){const v=document.getElementById('new-genre').value.trim();if(!v||lists.genres.includes(v))return;lists.genres.push(v);document.getElementById('new-genre').value='';renderTags('genre-tags',lists.genres,removeGenre);}
+function removeGenre(i){lists.genres.splice(i,1);renderTags('genre-tags',lists.genres,removeGenre);}
+
+async function chooseFolder(){const f=await window.api.chooseSongsFolder();if(f){document.getElementById('songs-folder-input').value=f;await loadLibrary();}}
+async function saveSettings(){const v=parseInt(document.getElementById('default-volume').value);await window.api.saveSettings({volume:v});await window.api.saveLists(lists.languages,lists.genres);document.getElementById('volume-slider').value=v;alert('Configurações salvas!');}
+async function loadDisplays(){const ds=await window.api.getDisplays();const s=await window.api.getSettings();const sel=document.getElementById('stage-monitor');sel.innerHTML=ds.map(d=>`<option value="${d.index}"${d.index===(s.stageMonitor||1)?' selected':''}>${d.label}${d.isPrimary?' (principal)':''}</option>`).join('');}
+async function moveStageToMonitor(idx){await window.api.moveToMonitor(parseInt(idx));}
+async function toggleFullscreen(){const isFs=await window.api.toggleFullscreen();const btn=document.getElementById('btn-fullscreen');btn.textContent=isFs?'⛶ Sair Fullscreen':'⛶ Fullscreen';btn.style.background=isFs?'#dc2626':'';}
+
+function esc(s){if(!s)return '';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function formatTime(s){if(!s||isNaN(s))return '0:00';return Math.floor(s/60)+':'+Math.floor(s%60).toString().padStart(2,'0');}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeQueueModal();}});
+init();
+</script>
+</body>
+</html>
